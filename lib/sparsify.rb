@@ -1,6 +1,8 @@
 # encoding: utf-8
 
 module Sparsify
+  # Your implementation goes here
+
   class Sparsifier
     def initialize(source, options={})
       @source = source
@@ -9,31 +11,28 @@ module Sparsify
 
     def process
       result = {}
-      @source.each{|k, v| sparsify(result, k, v)}
-
-      result
+      @source.each{|k, v| sparsify(result, k, v)} and return result
     end
 
     private
 
-    def sparsify(result, key, value)
+    def escape(key)
       key = key.sub("\\", "\\\\\\\\")
       key = key.sub(@separator, "\\#{@separator}")
+    end
+
+    def sparsify(result, key, value)
+      key = escape(key)
+
       case value
       when Hash
         tmp = {}
-        value.each do |k, v|
-          sparsify(tmp, k, v)
-        end
+        value.each {|k, v| sparsify(tmp, k, v)}
 
-        if tmp.keys.size > 0
-          tmp.each do |k, v|
-            concat = "#{key}#{@separator}#{k}"
-            p "key is #{key}, full key is #{concat}"
-            result[concat] = v
-          end
-        else
+        if tmp.empty?
           result[key] = {}
+        else
+          tmp.each{|k, v| result["#{key}#{@separator}#{k}"] = v}
         end
       else
         result[key] = value
@@ -49,11 +48,7 @@ module Sparsify
 
     def process
       result = {}
-      @source.each do |k, v|
-        unsparsify(result, k, v)
-      end
-
-      result
+      @source.each{|k, v| unsparsify(result, k, v)} and return result
     end
 
     private
@@ -88,7 +83,6 @@ module Sparsify
     end
   end
 
-  # Your implementation goes here
   def self.sparse(source, options={})
     raise ArgumentError.new("ERROR: wrong number of arguments") if source.nil?
 
