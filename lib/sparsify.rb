@@ -2,6 +2,19 @@
 
 module Sparsify
   # Your implementation goes here
+  def self.sparse(source, options={})
+    raise ArgumentError.new("ERROR: wrong number of arguments") if source.nil?
+
+    sparsifier = Sparsifier.new(source, options)
+    sparsifier.process()
+  end
+
+  def self.unsparse(source, options={})
+    raise ArgumentError.new("ERROR: wrong number of arguments") if source.nil?
+
+    unsparsifier = Unsparsifier.new(source, options)
+    unsparsifier.process()
+  end
 
   class Sparsifier
     def initialize(source, options={})
@@ -81,19 +94,5 @@ module Sparsify
         end
       end
     end
-  end
-
-  def self.sparse(source, options={})
-    raise ArgumentError.new("ERROR: wrong number of arguments") if source.nil?
-
-    sparsifier = Sparsifier.new(source, options)
-    sparsifier.process()
-  end
-
-  def self.unsparse(source, options={})
-    raise ArgumentError.new("ERROR: wrong number of arguments") if source.nil?
-
-    unsparsifier = Unsparsifier.new(source, options)
-    unsparsifier.process()
   end
 end
