@@ -2,23 +2,25 @@
 
 module Sparsify
   # Your implementation goes here
-  def self.sparse(source)
+  def self.sparse(source, options={})
     raise ArgumentError.new("ERROR: wrong number of arguments") if source.nil?
+    separator = options[:separator] || "."
 
     result = {}
     source.each do |k, v|
-      sparsify(result, k, v)
+      sparsify(result, k, v, separator)
     end
 
     result
   end
 
-  def self.unsparse(source)
+  def self.unsparse(source, options={})
     raise ArgumentError.new("ERROR: wrong number of arguments") if source.nil?
 
+    separator = options[:separator] || "."
     result = {}
     source.each do |k, v|
-      unsparsify(result, k, v)
+      unsparsify(result, k, v, separator)
     end
 
     result
@@ -26,17 +28,17 @@ module Sparsify
 
   private
 
-  def self.sparsify(result, key, value)
+  def self.sparsify(result, key, value, separator)
     case value
     when Hash
       tmp = {}
       value.each do |k, v|
-        sparsify(tmp, k, v)
+        sparsify(tmp, k, v, separator)
       end
 
       if tmp.keys.size > 0
         tmp.each do |k, v|
-          result["#{key}.#{k}"] = v
+          result["#{key}#{separator}#{k}"] = v
         end
       else
         result[key] = {}
@@ -46,14 +48,14 @@ module Sparsify
     end
   end
 
-  def self.unsparsify(result, key, value, level=0)
-    first, rest = key.split(".", 2)
+  def self.unsparsify(result, key, value, separator)
+    first, rest = key.split(separator, 2)
 
     if rest.nil?
       result[first] = value
     else
       tmp = {}
-      unsparsify(tmp, rest, value, level += 1)
+      unsparsify(tmp, rest, value, separator)
 
       if result.has_key?(first)
         tmp.each do |k, v|
