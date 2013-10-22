@@ -34,8 +34,12 @@ module Sparsify
         sparsify(tmp, k, v)
       end
 
-      tmp.each do |k, v|
-        result["#{key}.#{k}"] = v
+      if tmp.keys.size > 0
+        tmp.each do |k, v|
+          result["#{key}.#{k}"] = v
+        end
+      else
+        result[key] = {}
       end
     else
       result[key] = value
